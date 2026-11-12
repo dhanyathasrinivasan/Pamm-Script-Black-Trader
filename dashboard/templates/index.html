@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PAMM Test Hub</title>
+<style>
+:root{--bg:#0b0f17;--panel:#121826;--panel2:#171f30;--line:#243049;--text:#e6ebf5;--mute:#8a97b2;--ok:#2fd18b;--warn:#f5b942;--bad:#ff5d6c;--cyan:#41c7e8;--violet:#a58bff;--real:#3a1520;--radius:10px}
+*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,Segoe UI,Roboto,sans-serif;overflow-x:hidden}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer}
+a{color:var(--cyan)}
+header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--panel)}
+h1{font-size:18px;margin:0}h1 small{color:var(--mute);font-weight:400;font-size:12px;margin-left:8px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);font-size:12px;cursor:pointer}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--mute)}.dot.ok{background:var(--ok)}.dot.warn{background:var(--warn)}.dot.fail{background:var(--bad)}
+.banner{display:none;padding:9px 16px;background:#3b2a0b;border-bottom:1px solid #6b4a10;color:#ffd98a;cursor:pointer}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;padding:12px 16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px;min-height:74px}
+.card .k{color:var(--mute);font-size:11px;text-transform:uppercase;letter-spacing:.06em}.card .v{font-size:22px;font-weight:650;margin-top:2px}.card .s{color:var(--mute);font-size:12px}
+.card.clickable{cursor:pointer}.green{color:var(--ok)}.red{color:var(--bad)}.amber{color:var(--warn)}
+main{display:grid;grid-template-columns:340px minmax(0,1fr);gap:12px;padding:0 16px 24px}
+@media(max-width:900px){main{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:12px}
+.panel.real{background:var(--real);border-color:#7a2a3b}
+.panel h2{margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--mute)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}.seg button{background:var(--panel2);border:0;padding:5px 14px}.seg button.on{background:var(--cyan);color:#04202a;font-weight:650}.seg button.on.realb{background:var(--bad);color:#fff}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:6px 0}
+label.f{display:flex;flex-direction:column;gap:2px;font-size:11px;color:var(--mute);flex:1;min-width:70px}
+input,select{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:5px 8px;width:100%}
+.hint{color:var(--mute);font-size:12px}
+details{margin:6px 0}summary{cursor:pointer;color:var(--mute);font-size:12px}
+.group{margin:12px 0 4px;color:var(--mute);font-size:11px;text-transform:uppercase;letter-spacing:.07em}
+.suite{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--cyan);border-radius:8px;padding:8px 10px;margin:5px 0}
+.suite:disabled{opacity:.45;cursor:not-allowed}.suite:hover:not(:disabled){border-color:var(--cyan)}
+.suite.ok{border-left-color:var(--ok)}.suite.warn{border-left-color:var(--warn)}.suite.danger{border-left-color:var(--bad)}.suite.violet{border-left-color:var(--violet)}
+.suite b{display:block}.suite span{color:var(--mute);font-size:12px}
+.badge{font-size:10px;border-radius:5px;padding:1px 6px;border:1px solid var(--line);color:var(--mute);white-space:nowrap}.badge.real{color:var(--warn);border-color:var(--warn)}.badge.destructive{color:var(--bad);border-color:var(--bad)}
+.tabs{display:flex;gap:2px;overflow-x:auto;border-bottom:1px solid var(--line);margin-bottom:10px;white-space:nowrap;scrollbar-width:thin}
+.tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:8px 12px;color:var(--mute);white-space:nowrap}.tabs button.on{color:var(--text);border-bottom-color:var(--cyan)}
+.tab{display:none}.tab.on{display:block}
+pre.term{background:#070a10;border:1px solid var(--line);border-radius:8px;padding:10px;margin:0;height:430px;overflow:auto;font:12px/1.5 ui-monospace,Consolas,monospace;white-space:pre-wrap;word-break:break-word}
+.l-pass{color:var(--ok)}.l-fail,.l-high{color:var(--bad);font-weight:600}.l-med,.l-warn{color:var(--warn)}.l-info{color:var(--cyan)}.l-skip{color:var(--mute)}
+.bar{height:6px;background:var(--panel2);border-radius:99px;overflow:hidden;margin:6px 0}.bar i{display:block;height:100%;width:0;background:var(--cyan);transition:width .4s}
+.btn{background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:5px 12px}.btn:hover{border-color:var(--cyan)}.btn.pri{background:var(--cyan);color:#04202a;border-color:var(--cyan);font-weight:650}.btn.danger{border-color:var(--bad);color:var(--bad)}
+table{width:100%;border-collapse:collapse;font-size:12.5px}th,td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}th{color:var(--mute);font-weight:500;position:sticky;top:0;background:var(--panel)}
+.scroll{overflow:auto;max-height:480px;border:1px solid var(--line);border-radius:8px}
+tr.click{cursor:pointer}tr.click:hover{background:var(--panel2)}
+.tag{padding:1px 7px;border-radius:5px;font-size:11px}.tag.OK,.tag.PASS,.tag.COMPLETED,.tag.ok{background:#12382a;color:var(--ok)}.tag.FAIL,.tag.FAILED,.tag.MISMATCH,.tag.MISSING,.tag.fail{background:#401a22;color:var(--bad)}.tag.WARN,.tag.DUST,.tag.warn,.tag.TERMINATED{background:#3b2f10;color:var(--warn)}.tag.RUNNING{background:#10303a;color:var(--cyan)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.modal .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;max-width:560px;width:100%;max-height:90vh;overflow:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);background:var(--panel);border-left:1px solid var(--line);z-index:40;transform:translateX(100%);transition:transform .2s;overflow:auto;padding:14px}.drawer.on{transform:none}
+#toasts{position:fixed;right:12px;bottom:12px;display:flex;flex-direction:column;gap:6px;z-index:80}.toast{background:var(--panel2);border:1px solid var(--line);border-left:3px solid var(--ok);padding:8px 12px;border-radius:8px;max-width:320px}.toast.warn{border-left-color:var(--warn)}.toast.bad{border-left-color:var(--bad)}
+.check{display:flex;gap:8px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--line)}.check code{background:#070a10;padding:2px 6px;border-radius:4px;cursor:pointer;display:inline-block;margin-top:3px}
+.empty{color:var(--mute);padding:26px;text-align:center}
+.steps li{margin:6px 0}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>PAMM Test Hub <small id="target"></small></h1>
+  <div class="row" style="margin:0">
+    <span class="pill" id="healthPill" onclick="switchTab('start')"><span class="dot" id="healthDot"></span><span id="healthTxt">checking setup…</span></span>
+    <span class="pill" id="runPill" style="display:none"><span class="dot ok"></span><span id="runTxt"></span></span>
+  </div>
+</header>
+<div class="banner" id="setupBanner" onclick="switchTab('start')">Setup is incomplete — click to see what to fix.</div>
+
+<section class="cards" aria-label="Summary">
+  <div class="card clickable" onclick="switchTab('evidence')"><div class="k">Suites green</div><div class="v" id="cSuites">–</div><div class="s" id="cSuitesS">no evidence yet</div></div>
+  <div class="card clickable" onclick="switchTab('evidence')"><div class="k">Checks</div><div class="v" id="cChecks">–</div><div class="s" id="cChecksS">latest run per suite</div></div>
+  <div class="card clickable" onclick="switchTab('history')"><div class="k">Last run</div><div class="v" id="cLast" style="font-size:16px">–</div><div class="s" id="cLastS"></div></div>
+  <div class="card clickable" onclick="switchTab('investors')"><div class="k">Target</div><div class="v" id="cTarget">–</div><div class="s" id="cTargetS"></div></div>
+  <div class="card clickable" onclick="switchTab('start')"><div class="k">Setup</div><div class="v" id="cSetup">–</div><div class="s" id="cSetupS">click for details</div></div>
+</section>
+
+<main>
+  <aside class="panel" id="launcher">
+    <h2>Launcher</h2>
+    <div class="row"><span class="hint">Run on</span>
+      <div class="seg" role="group" aria-label="Instance"><button id="bPaper" class="on" onclick="setInstance('paper')">Paper</button><button id="bReal" onclick="setInstance('real')">Real</button></div>
+    </div>
+    <div class="row">
+      <label class="f">Investors from<input id="oStart" type="number" min="1" value="1"></label>
+      <label class="f">to<input id="oEnd" type="number" min="1" value="10"></label>
+    </div>
+    <details><summary>Advanced</summary>
+      <div class="row">
+        <label class="f">Manager lot<input id="oLot" type="number" step="0.05" min="0.01" max="5" value="0.5"></label>
+        <label class="f">Load ramp<input id="oRamp" value="5,10,25"></label>
+      </div>
+      <div class="row">
+        <label class="f">Concurrency<input id="oConc" type="number" min="2" max="100" value="10"></label>
+        <label class="f">Walk ops<input id="oOps" type="number" min="1" max="50" value="4"></label>
+        <label class="f">Seed<input id="oSeed" type="number" placeholder="random"></label>
+      </div>
+    </details>
+    <div class="hint" id="optHint"></div>
+    <div class="row"><input id="filter" placeholder="Filter suites…  ( / )" aria-label="Filter suites"></div>
+    <div id="suiteList"></div>
+  </aside>
+
+  <section class="panel" style="min-width:0">
+    <div class="tabs" role="tablist" id="tabs">
+      <button data-t="terminal" class="on">Terminal</button><button data-t="investors">Investors</button><button data-t="flow">Order flow</button>
+      <button data-t="evidence">Evidence</button><button data-t="dispatch">Dispatch &amp; Verify</button><button data-t="history">History</button><button data-t="start">Getting Started</button>
+    </div>
+
+    <div class="tab on" id="t-terminal">
+      <div class="row"><b id="runName">Idle</b><span class="tag" id="runStatus">IDLE</span><span class="hint" id="runElapsed"></span>
+        <span style="flex:1"></span><span class="green" id="cntPass">0 pass</span><span class="red" id="cntFail">0 fail</span></div>
+      <div class="bar"><i id="bar"></i></div>
+      <pre class="term" id="term" tabindex="0"></pre>
+      <div class="row"><button class="btn" onclick="copyLog()">Copy</button><a class="btn" href="/api/logs/download" style="text-decoration:none">Download</a>
+        <button class="btn danger" id="stopBtn" onclick="stopRun()" disabled>Stop</button></div>
+    </div>
+
+    <div class="tab" id="t-investors">
+      <div class="row"><input id="invFilter" placeholder="Search email / in pool…" style="max-width:260px"><span class="hint" id="invInfo"></span><span style="flex:1"></span><button class="btn" onclick="loadInvestors(true)">Refresh</button></div>
+      <div class="scroll"><table><thead><tr><th>#</th><th>Email</th><th>In pool</th><th>Deposit</th><th>Share %</th><th>Running PnL</th><th>Wallet</th></tr></thead><tbody id="invBody"></tbody></table></div>
+    </div>
+
+    <div class="tab" id="t-flow">
+      <div class="hint">Latest settled manager trades and how they fanned out to the pool. Percent should always add to 100 (minus sub-cent dust).</div>
+      <div class="scroll"><table><thead><tr><th>Trade</th><th>Settled</th><th>Order PnL</th><th>Investors</th><th>Σ shared</th><th>Σ %</th></tr></thead><tbody id="flowBody"></tbody></table></div>
+    </div>
+
+    <div class="tab" id="t-evidence">
+      <div class="row"><b>Latest result per suite</b></div>
+      <div class="scroll" style="max-height:200px"><table><thead><tr><th>Suite</th><th>Status</th><th>Pass</th><th>Fail</th><th>Warn</th><th>When</th></tr></thead><tbody id="famBody"></tbody></table></div>
+      <div class="row" style="margin-top:12px"><b>Reports</b><span class="hint">click to view</span></div>
+      <div class="scroll" style="max-height:260px"><table><thead><tr><th>File</th><th>Suite</th><th>Size</th><th>Modified</th></tr></thead><tbody id="repBody"></tbody></table></div>
+      <pre class="term" id="repView" style="height:260px;margin-top:10px;display:none"></pre>
+    </div>
+
+    <div class="tab" id="t-dispatch">
+      <div class="hint">Places ONE paper manager order, closes it, then compares every investor's allocation to the expected pro-rata value. Paper only.</div>
+      <div class="row">
+        <div class="seg"><button id="dBuy" class="on" onclick="dSide('BUY')">BUY</button><button id="dSell" onclick="dSide('SELL')">SELL</button></div>
+        <label class="f" style="max-width:110px">Qty<input id="dQty" type="number" value="0.5" step="0.1" min="0.01" max="5"></label>
+        <button class="btn pri" id="dGo" onclick="dispatch()">Dispatch &amp; verify</button><span class="hint" id="dMsg"></span>
+      </div>
+      <div class="row" id="dSummary"></div>
+      <div class="scroll"><table><thead><tr><th>Investor</th><th>Deposit</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead><tbody id="dBody"></tbody></table></div>
+    </div>
+
+    <div class="tab" id="t-history">
+      <div class="scroll"><table><thead><tr><th>When</th><th>Suite</th><th>Status</th><th>Pass</th><th>Fail</th><th>Duration</th><th></th></tr></thead><tbody id="histBody"></tbody></table></div>
+      <pre class="term" id="histView" style="height:300px;margin-top:10px;display:none"></pre>
+    </div>
+
+    <div class="tab" id="t-start">
+      <div class="row"><b>Setup check</b><button class="btn" onclick="loadHealth(true)">Re-check</button></div>
+      <div id="healthList"></div>
+      <h2 style="margin-top:16px">First run</h2>
+      <ol class="steps"><li><code>python scripts/bootstrap.py</code> — venv, dependencies, <code>.env</code></li><li>Fill in <code>.env</code></li><li><code>python scripts/doctor.py</code></li><li><code>python dashboard/app.py</code></li></ol>
+      <button class="btn pri" onclick="safeFirstRun()">Safe first run (Accounting Audit — read-only)</button>
+    </div>
+  </section>
+</main>
+
+<aside class="drawer" id="drawer" aria-label="Account details"><div class="row"><b id="drTitle"></b><span style="flex:1"></span><button class="btn" onclick="closeDrawer()">Close</button></div><div id="drBody"></div></aside>
+
+<div class="modal" id="confirmModal" role="dialog" aria-modal="true"><div class="box">
+  <h3 id="cfTitle" style="margin-top:0"></h3><p id="cfText"></p>
+  <p class="hint">Type <b id="cfWord"></b> to continue.</p>
+  <input id="cfInput" autocomplete="off"><div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn" onclick="closeConfirm()">Cancel</button><button class="btn pri" id="cfGo" disabled onclick="confirmGo()">Run</button></div>
+</div></div>
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = (n, d = 2) => (n === null || n === undefined || isNaN(n)) ? '–' : Number(n).toLocaleString(undefined, {minimumFractionDigits: d, maximumFractionDigits: d});
+const ago = iso => { if (!iso) return ''; const s = (Date.now() - new Date(iso)) / 1000; return s < 60 ? 'just now' : s < 3600 ? Math.floor(s/60) + ' min ago' : s < 86400 ? Math.floor(s/3600) + ' h ago' : Math.floor(s/86400) + ' d ago'; };
+async function api(url, opts) { const r = await fetch(url, opts); let d = {}; try { d = await r.json(); } catch (e) {} return {ok: r.ok, status: r.status, data: d}; }
+function toast(msg, kind) { const t = document.createElement('div'); t.className = 'toast ' + (kind || ''); t.textContent = msg; $('toasts').appendChild(t); setTimeout(() => t.remove(), 5000); }
+function copyText(t) { try { navigator.clipboard.writeText(t).then(() => toast('Copied'), () => toast('Copy failed', 'warn')); } catch (e) { toast('Copy failed', 'warn'); } }
+
+let SUITES = [], CFG = {}, INSTANCE = 'paper', STATUS = {}, TAB = 'terminal', HEALTH = null, pending = null, lastLog = null, lastRunId = null;
+
+/* ---------- tabs ---------- */
+function switchTab(t) {
+  TAB = t;
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  document.querySelectorAll('.tab').forEach(e => e.classList.toggle('on', e.id === 't-' + t));
+  refreshTab(true);
+}
+$('tabs').addEventListener('click', e => { if (e.target.dataset.t) switchTab(e.target.dataset.t); });
+function refreshTab(force) {
+  if (document.hidden) return;
+  ({terminal: fetchLogs, investors: () => loadInvestors(force), flow: loadFlow, evidence: loadEvidence, history: loadHistory, start: () => loadHealth(false)})[TAB]?.();
+}
+
+/* ---------- launcher ---------- */
+function setInstance(i) {
+  INSTANCE = i;
+  $('bPaper').className = i === 'paper' ? 'on' : ''; $('bReal').className = i === 'real' ? 'on realb' : '';
+  $('launcher').classList.toggle('real', i === 'real'); renderSuites(); hint();
+}
+function hint() {
+  const n = Math.max(0, (+$('oEnd').value || 0) - (+$('oStart').value || 0) + 1);
+  $('optHint').textContent = `${n} investors + manager on ${INSTANCE.toUpperCase()}`;
+}
+['oStart','oEnd'].forEach(i => $(i).addEventListener('input', hint));
+function params() { return {instance: INSTANCE, start: +$('oStart').value, end: +$('oEnd').value, lot: +$('oLot').value, ramp: $('oRamp').value, concurrency: +$('oConc').value, ops: +$('oOps').value, seed: $('oSeed').value}; }
+function renderSuites() {
+  const q = $('filter').value.toLowerCase(), busy = STATUS.is_running; let html = '', cat = '';
+  for (const s of SUITES) {
+    if (q && !(s.name + s.desc + s.category + s.tag).toLowerCase().includes(q)) continue;
+    if (s.category !== cat) { cat = s.category; html += `<div class="group">${esc(cat)}</div>`; }
+    html += `<button class="suite ${esc(s.tone)}" ${busy ? 'disabled' : ''} onclick="runSuite('${s.key}')"><div style="flex:1"><b>${esc(s.name)}</b><span>${esc(s.desc)}</span></div>
+      <div style="text-align:right"><span class="badge ${s.risk}">${s.risk === 'safe' ? esc(s.tag) : s.risk.toUpperCase()}</span><br><span>~${s.minutes} min</span></div></button>`;
+  }
+  $('suiteList').innerHTML = html || '<div class="empty">No suite matches.</div>';
+}
+$('filter').addEventListener('input', renderSuites);
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && !/INPUT|SELECT/.test(document.activeElement.tagName)) { e.preventDefault(); $('filter').focus(); }
+  if (e.key === 'Escape') { closeConfirm(); closeDrawer(); }
+});
+
+async function runSuite(key, confirmed) {
+  const s = SUITES.find(x => x.key === key);
+  const r = await api('/api/run', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({suite: key, params: params(), confirm: !!confirmed})});
+  if (r.status === 412) return openConfirm(s, r.data.reason);
+  if (!r.ok) return toast(r.data.error || 'Could not start', 'bad');
+  toast('Started ' + s.name); lastLog = null; switchTab('terminal'); fetchStatus();
+}
+function openConfirm(s, reason) {
+  pending = s.key; const real = INSTANCE === 'real' || s.risk === 'real', word = real ? 'REAL' : 'TEARDOWN';
+  $('cfTitle').textContent = s.name; $('cfText').textContent = reason; $('cfWord').textContent = word; $('cfGo').dataset.word = word;
+  $('cfInput').value = ''; $('cfGo').disabled = true; $('confirmModal').style.display = 'flex'; $('cfInput').focus();
+}
+$('cfInput').addEventListener('input', () => { $('cfGo').disabled = $('cfInput').value.trim().toUpperCase() !== $('cfGo').dataset.word; });
+function closeConfirm() { $('confirmModal').style.display = 'none'; pending = null; }
+function confirmGo() { const k = pending; closeConfirm(); if (k) runSuite(k, true); }
+function safeFirstRun() { setInstance('paper'); runSuite('accounting'); }
+async function stopRun() {
+  if (!confirm('Stop the running suite?\n\nPositions may remain open — use Emergency Teardown afterwards.')) return;
+  const r = await api('/api/stop', {method: 'POST'}); toast(r.data.message || 'Stopped', 'warn'); fetchStatus();
+}
+
+/* ---------- status + terminal ---------- */
+let wasRunning = false;
+async function fetchStatus() {
+  const r = await api('/api/status'); if (!r.ok) return; STATUS = r.data; const s = STATUS;
+  $('runName').textContent = s.name || 'Idle'; const st = $('runStatus'); st.textContent = s.status; st.className = 'tag ' + s.status;
+  $('runElapsed').textContent = s.started_at ? Math.round(s.elapsed_seconds) + ' s' : '';
+  $('cntPass').textContent = s.pass_count + ' pass'; $('cntFail').textContent = s.fail_count + ' fail';
+  $('stopBtn').disabled = !s.is_running;
+  const meta = SUITES.find(x => x.key === s.suite), est = (meta ? meta.minutes : 3) * 60;
+  $('bar').style.width = s.is_running ? Math.min(95, 100 * s.elapsed_seconds / est) + '%' : (s.suite ? '100%' : '0');
+  $('runPill').style.display = s.is_running ? '' : 'none'; $('runTxt').textContent = s.is_running ? s.name : '';
+  document.title = s.is_running ? `▶ ${s.name} — PAMM Test Hub` : 'PAMM Test Hub';
+  if (wasRunning && !s.is_running) { toast(`${s.name}: ${s.status} (${s.pass_count} pass / ${s.fail_count} fail)`, s.fail_count ? 'bad' : ''); fetchSummary(); renderSuites(); }
+  if (wasRunning !== s.is_running) renderSuites();
+  wasRunning = s.is_running;
+}
+async function fetchLogs() {
+  const r = await api('/api/logs'); const text = r.data.logs || ''; if (text === lastLog) return; lastLog = text;
+  const el = $('term'), stick = el.scrollTop + el.clientHeight >= el.scrollHeight - 30;
+  if (!text) { el.innerHTML = '<span class="l-skip">No run yet. Pick a suite on the left — try “Accounting Audit” for a safe, read-only first run.</span>'; return; }
+  el.innerHTML = esc(text).split('\n').map(l => {
+    const m = l.match(/^\[(PASS|FAIL|HIGH|MED|WARN|INFO|SKIP)\]/); return m ? `<span class="l-${m[1].toLowerCase()}">${l}</span>` : l;
+  }).join('\n');
+  if (stick) el.scrollTop = el.scrollHeight;
+}
+function copyLog() { copyText($('term').innerText); }
+
+/* ---------- summary / health ---------- */
+async function fetchSummary() {
+  const r = await api('/api/summary'); if (!r.ok) return; const d = r.data, t = d.totals || {};
+  $('cSuites').textContent = t.suites ? `${t.suites_green}/${t.suites}` : '–'; $('cSuites').className = 'v ' + (t.suites && t.suites_green === t.suites ? 'green' : t.suites ? 'amber' : '');
+  $('cSuitesS').textContent = t.suites ? 'suites fully passing' : 'no evidence yet — run a suite';
+  $('cChecks').innerHTML = t.suites ? `<span class="green">${t.passed}</span> / <span class="red">${t.failed}</span>` : '–';
+  const l = d.last_run; $('cLast').textContent = l ? l.name : 'none yet'; $('cLastS').textContent = l ? `${l.status} · ${ago(l.started_at)}` : '';
+}
+async function loadHealth(force) {
+  const r = await api('/api/health' + (force ? '?refresh=1' : '')); if (!r.ok) return; HEALTH = r.data; const o = HEALTH.overall;
+  $('healthDot').className = 'dot ' + o; $('healthTxt').textContent = {ok: 'setup ready', warn: 'setup OK, warnings', fail: 'setup incomplete'}[o];
+  $('cSetup').textContent = {ok: 'Ready', warn: 'Warnings', fail: 'Fix needed'}[o]; $('cSetup').className = 'v ' + {ok: 'green', warn: 'amber', fail: 'red'}[o];
+  $('setupBanner').style.display = o === 'fail' ? 'block' : 'none';
+  $('healthList').innerHTML = HEALTH.checks.map(c => `<div class="check"><span class="tag ${c.status}">${c.status.toUpperCase()}</span><div style="flex:1">${esc(c.label)}${c.detail ? ` <span class="hint">— ${esc(c.detail)}</span>` : ''}${c.fix && c.status !== 'ok' ? `<br><code title="click to copy" onclick="copyText(this.textContent)">${esc(c.fix)}</code>` : ''}</div></div>`).join('');
+}
+
+/* ---------- investors / flow ---------- */
+let INV = [];
+async function loadInvestors() {
+  const r = await api('/api/investors?instance=paper'); if (!r.ok) { $('invBody').innerHTML = `<tr><td colspan="7" class="empty">${esc(r.data.error || 'failed')}</td></tr>`; return; }
+  INV = r.data.investors; renderInv();
+  const inPool = INV.filter(i => i.in_pool).length; $('cTarget').textContent = inPool + ' investors'; $('cTargetS').textContent = `pool $${fmt(r.data.pool_total, 0)}`;
+}
+function renderInv() {
+  const q = $('invFilter').value.toLowerCase(); const rows = INV.filter(i => !q || i.email.includes(q) || (q === 'in pool' && i.in_pool));
+  $('invInfo').textContent = `${rows.length} of ${INV.length}`;
+  $('invBody').innerHTML = rows.map(i => `<tr class="click" onclick="openAccount('${esc(i.email)}')"><td>${i.index}</td><td>${esc(i.email)}</td><td><span class="tag ${i.in_pool ? 'ok' : 'warn'}">${i.in_pool ? 'yes' : 'no'}</span></td><td>${fmt(i.deposit)}</td><td>${fmt(i.share_pct, 3)}</td><td class="${i.running_pnl < 0 ? 'red' : i.running_pnl > 0 ? 'green' : ''}">${fmt(i.running_pnl)}</td><td>${fmt(i.wallet)}</td></tr>`).join('') || '<tr><td colspan="7" class="empty">No investors.</td></tr>';
+}
+$('invFilter').addEventListener('input', renderInv);
+async function loadFlow() {
+  const r = await api('/api/allocations?instance=paper'); if (!r.ok) return;
+  $('flowBody').innerHTML = r.data.trades.map(t => `<tr><td>${t.trade_id}</td><td>${esc(ago(t.at))}</td><td class="${t.order_pnl < 0 ? 'red' : 'green'}">${fmt(t.order_pnl, 4)}</td><td>${t.investors}</td><td>${fmt(t.sum_shared, 4)}</td><td>${fmt(t.sum_pct, 3)}</td></tr>`).join('') || '<tr><td colspan="6" class="empty">No settled trades yet.</td></tr>';
+}
+async function openAccount(email) {
+  $('drTitle').textContent = email; $('drBody').innerHTML = '<div class="empty">Loading…</div>'; $('drawer').classList.add('on');
+  const r = await api('/api/account/' + encodeURIComponent(email) + '?instance=paper'); if (!r.ok) { $('drBody').innerHTML = `<div class="empty">${esc(r.data.error)}</div>`; return; }
+  const d = r.data, f = d.funds || {}, sub = (d.subscriptions || [])[0];
+  $('drBody').innerHTML = `<div class="row"><span class="tag ${sub ? 'ok' : 'warn'}">${sub ? 'in pool' : 'not in pool'}</span><span>Balance <b>${fmt(f.balance)}</b></span><span>Equity <b>${fmt(f.equity)}</b></span></div>
+   ${sub ? `<div class="hint">Deposit ${fmt(sub.deposit)} · running PnL ${fmt(sub.running_pnl)} · joined ${esc(ago(sub.joined_at))}</div>` : ''}
+   <h2 style="margin-top:12px">Open positions (${d.positions.length})</h2><div class="scroll" style="max-height:160px"><table><tbody>${d.positions.map(p => `<tr><td>${esc(p.symbol)}</td><td>${esc(p.side)}</td><td>${p.net_qty}</td><td>${fmt(p.unrealized_pnl, 4)}</td></tr>`).join('') || '<tr><td class="empty">none</td></tr>'}</tbody></table></div>
+   <h2 style="margin-top:12px">Recent allocations</h2><div class="scroll"><table><thead><tr><th>Trade</th><th>%</th><th>Order PnL</th><th>Share</th><th>Running</th></tr></thead><tbody>${d.allocations.map(a => `<tr><td>${a.trade_id}</td><td>${fmt(a.percentage, 4)}</td><td>${fmt(a.order_pnl, 3)}</td><td>${fmt(a.shared_pnl)}</td><td>${fmt(a.running_pnl)}</td></tr>`).join('') || '<tr><td colspan="5" class="empty">none</td></tr>'}</tbody></table></div>`;
+}
+function closeDrawer() { $('drawer').classList.remove('on'); }
+
+/* ---------- evidence / history ---------- */
+async function loadEvidence() {
+  const [s, r] = await Promise.all([api('/api/summary'), api('/api/reports')]);
+  $('famBody').innerHTML = (s.data.families || []).map(f => `<tr class="click" onclick="viewReport('${esc(f.file)}')"><td>${esc(f.label)}</td><td><span class="tag ${f.status}">${f.status}</span></td><td>${f.passed}</td><td>${f.failed}</td><td>${f.warned}</td><td>${esc(ago(f.modified))}</td></tr>`).join('') || '<tr><td colspan="6" class="empty">No evidence yet.</td></tr>';
+  $('repBody').innerHTML = (r.data.reports || []).slice(0, 80).map(x => `<tr class="click" onclick="viewReport('${esc(x.filename)}')"><td>${esc(x.filename)}</td><td>${esc(x.category)}</td><td>${x.size_kb} KB</td><td>${esc(x.modified_at)}</td></tr>`).join('');
+}
+async function viewReport(f) {
+  const r = await api('/api/reports/' + encodeURIComponent(f)); const v = $('repView'); v.style.display = 'block';
+  v.textContent = r.ok ? (r.data.is_json ? JSON.stringify(JSON.parse(r.data.content), null, 2) : r.data.content) : (r.data.error || 'failed'); v.scrollIntoView({block: 'nearest'});
+}
+async function loadHistory() {
+  const r = await api('/api/history'); $('histBody').innerHTML = (r.data.runs || []).slice(0, 100).map(h => `<tr><td>${esc(ago(h.started_at))}</td><td>${esc(h.name)}</td><td><span class="tag ${h.status}">${h.status}</span></td><td>${h.passed ?? ''}</td><td>${h.failed ?? ''}</td><td>${h.duration_sec ?? ''}s</td><td><button class="btn" onclick="viewRun('${esc(h.id)}')">Log</button> <button class="btn" onclick="rerun('${esc(h.suite)}')" ${STATUS.is_running ? 'disabled' : ''}>Re-run</button></td></tr>`).join('') || '<tr><td colspan="7" class="empty">No runs yet.</td></tr>';
+}
+async function viewRun(id) { const r = await api(`/api/history/${id}/log`); const v = $('histView'); v.style.display = 'block'; v.textContent = r.data.logs || r.data.error || ''; }
+function rerun(k) { runSuite(k); }
+
+/* ---------- dispatch ---------- */
+let dSideV = 'BUY';
+function dSide(s) { dSideV = s; $('dBuy').className = s === 'BUY' ? 'on' : ''; $('dSell').className = s === 'SELL' ? 'on' : ''; }
+async function dispatch() {
+  if (STATUS.is_running) return toast('A suite is running', 'warn');
+  $('dGo').disabled = true; $('dMsg').textContent = 'Placing order, waiting for price movement and settlement (up to ~50 s)…'; $('dBody').innerHTML = ''; $('dSummary').innerHTML = '';
+  const r = await api('/api/dispatch', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({side: dSideV, qty: +$('dQty').value, instance: 'paper', confirm: true})});
+  $('dGo').disabled = false; if (!r.ok) { $('dMsg').textContent = r.data.error || 'failed'; return toast(r.data.error || 'Dispatch failed', 'bad'); }
+  const d = r.data, s = d.summary; $('dMsg').textContent = `realized ${fmt(d.realized_pnl, 4)} · settled in ${d.settle_lag_s}s · trade ${d.trade_ids.join(',')}`;
+  $('dSummary').innerHTML = Object.entries(s).map(([k, v]) => `<span class="tag ${k === 'OK' ? 'OK' : k === 'DUST' ? 'WARN' : 'FAIL'}">${k} ${v}</span>`).join(' ') + (s.DUST ? ' <span class="hint">DUST = share under half a cent, platform records no row</span>' : '');
+  $('dBody').innerHTML = d.table.map(t => `<tr><td>${esc(t.name || t.follower)}</td><td>${fmt(t.deposit)}</td><td>${fmt(t.expected, 4)}</td><td>${fmt(t.actual, 2)}</td><td><span class="tag ${t.status === 'OK' ? 'OK' : t.status === 'DUST' ? 'WARN' : 'FAIL'}">${t.status}</span></td></tr>`).join('');
+}
+
+/* ---------- boot + polling (visible tab, visible page only) ---------- */
+async function boot() {
+  const [c, s] = await Promise.all([api('/api/config'), api('/api/suites')]); CFG = c.data; SUITES = s.data.suites || [];
+  $('target').textContent = CFG.base_url ? new URL(CFG.base_url).host : ''; $('oEnd').value = Math.min(CFG.investor_count || 10, 10);
+  renderSuites(); hint(); fetchStatus(); fetchSummary(); loadHealth(false);
+  api('/api/pool?instance=paper').then(p => { if (p.ok) { $('cTarget').textContent = p.data.members + ' investors'; $('cTargetS').textContent = `${p.data.master.display_name || 'master'} · pool $${fmt(p.data.pool_total, 0)}`; } });
+  fetch('/api/health').then(r => r.json()).then(h => { if (h.overall === 'fail') switchTab('start'); }).catch(() => {});
+}
+setInterval(() => { if (!document.hidden) { fetchStatus(); if (TAB === 'terminal') fetchLogs(); } }, 2000);
+setInterval(() => { if (!document.hidden && TAB !== 'terminal') refreshTab(false); }, 10000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { fetchStatus(); refreshTab(false); } });
+boot(); fetchLogs();
+</script>
+</body>
+</html>

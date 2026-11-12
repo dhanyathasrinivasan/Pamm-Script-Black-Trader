@@ -1,12 +1,6 @@
-# BlackTrader PAMM Test Automation Suite
-#
-# This suite is built using the Python Standard Library (3.8+)
-# No external pip dependencies are required!
-#
-# Standard modules utilized:
-# - urllib.request (Network/REST API client)
-# - concurrent.futures (Multi-threaded audit & execution)
-# - json, csv (Data processing & serialization)
-# - argparse (CLI interface)
-# - pathlib, os, sys (Filesystem management)
-
+# PAMM Test Hub dependencies
+requests>=2.31.0
+python-dotenv>=1.0.0
+flask>=3.0.0          # dashboard
+playwright>=1.40.0    # optional: UI verification (then: playwright install chromium)
+pytest>=8.0.0         # offline smoke tests (python -m pytest)

@@ -20,23 +20,23 @@ class Config:
                     key, val = line.split("=", 1)
                     _env_vars[key.strip()] = val.strip().strip("\"'")
 
-    BASE_URL = _env_vars.get("PLATFORM_BASE_URL", "https://lpadmin.blackfx.com")
+    BASE_URL = _env_vars.get("PLATFORM_BASE_URL", "")
 
     # Master Account
-    MASTER_EMAIL = _env_vars.get("ADMIN_USERNAME", "dhanya@mailinator.com")
-    MASTER_PASSWORD = _env_vars.get("ADMIN_PASSWORD", "test1234")
-    MASTER_CLIENT_ID = _env_vars.get("MASTER_CLIENT_ID", "mem_fb2ee87f7645878a2f")
+    MASTER_EMAIL = _env_vars.get("ADMIN_USERNAME", "")
+    MASTER_PASSWORD = _env_vars.get("ADMIN_PASSWORD", "")
+    MASTER_CLIENT_ID = _env_vars.get("MASTER_CLIENT_ID", "")
     MASTER_POOL_NAME = _env_vars.get("MASTER_POOL_NAME", "Alpha Pool")
     MANAGER_SHARE_PERCENT = float(_env_vars.get("MANAGER_SHARE_PERCENT", "20.0"))
 
     # Back-Office Admin
-    BLACKADMIN_EMAIL = _env_vars.get("BLACKADMIN_EMAIL", "lpadmin@blacktrader.com")
-    BLACKADMIN_PASSWORD = _env_vars.get("BLACKADMIN_PASSWORD", "Raj1234!")
+    BLACKADMIN_EMAIL = _env_vars.get("BLACKADMIN_EMAIL", "")
+    BLACKADMIN_PASSWORD = _env_vars.get("BLACKADMIN_PASSWORD", "")
 
     # Follower Pool Settings
     FOLLOWER_PREFIX = "pamfollower"
     FOLLOWER_DOMAIN = "mailinator.com"
-    FOLLOWER_PASSWORD = _env_vars.get("FOLLOWER_PASSWORD", "Password123!")
+    FOLLOWER_PASSWORD = _env_vars.get("INVESTOR_PASSWORD") or _env_vars.get("FOLLOWER_PASSWORD", "")
     FOLLOWER_COUNT = int(_env_vars.get("TEST_FOLLOWER_COUNT", "100"))
 
     # Trading Defaults

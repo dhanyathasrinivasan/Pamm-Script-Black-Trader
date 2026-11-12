@@ -6,18 +6,22 @@
 __pycache__/
 *.pyc
 *.pyo
+.venv/
+.pytest_cache/
 
-# Logs & temp files
+# Logs & run history (may contain account emails; never commit)
+reports/logs/
 *.log
 .DS_Store
 
+# Generated evidence is local by default. Review for tokens/PII before force-adding.
+reports/evidence/*.json
+reports/evidence/*.md
+reports/evidence/screenshots/
+
 # UI test suite (separate repository)
 ui_test_suite/
-
-# Node & UI test dependencies
 node_modules/
-ui_test_suite/node_modules/
 
 # Archives
 *.zip
-
